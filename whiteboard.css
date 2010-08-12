@@ -1,38 +1,53 @@
-html, body {
-    height: 100%;
+html, body, section {
+  height: 100%;
+}
+
+html {
+  display: table;
+  width: 100%;
+}
+
+body {
+  display: table-row;
 }
 
 section {
-    display: table-cell;
-    height: 100%;
+  display: table-cell;
+  position: relative;
 }
 
 #avatar {
-    width: 50px;
-    height: 50px;
-}
-
-#whiteboard, #left-bar, #right-bar {
-    float: left;
-    min-height: 100%;
-    padding: 0 0 1em 0;
+  width: 50px;
+  height: 50px;
 }
 
 #whiteboard {
-    background: #ffffff;
-    width: 64%;
-    left: 102%;
+  background: white;
 }
 
-#left-bar {
-    background: #477ab3;
-    width: 18%;
-    left: 31%;
+.bar {
+  background: #477ab3;
+  width: 150px;
 }
 
-#right-bar {
-    background: #477ab3;
-    width: 18%;
-    left: 85%;
+canvas {
+  height: 99%;
+  width: 100%;
+  -webkit-box-sizing: border-box;
 }
 
+footer {
+  background: #3669a2;
+  bottom: 0px;
+  padding: 6px;
+  position: fixed;
+  width: 100%;
+}
+
+#menu-button {
+  border: 1px solid black;
+  border-radius: 3px;
+  color: black;
+  padding: 2px 3px;
+  text-decoration: none;
+}
