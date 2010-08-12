@@ -1,8 +1,38 @@
+html, body {
+    height: 100%;
+}
+
 section {
     display: table-cell;
+    height: 100%;
 }
 
 #avatar {
     width: 50px;
     height: 50px;
 }
+
+#whiteboard, #left-bar, #right-bar {
+    float: left;
+    min-height: 100%;
+    padding: 0 0 1em 0;
+}
+
+#whiteboard {
+    background: #ffffff;
+    width: 64%;
+    left: 102%;
+}
+
+#left-bar {
+    background: #477ab3;
+    width: 18%;
+    left: 31%;
+}
+
+#right-bar {
+    background: #477ab3;
+    width: 18%;
+    left: 85%;
+}
+
