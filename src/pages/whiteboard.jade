@@ -2,13 +2,21 @@
 html
   head
     title Whitespace
-    link(rel: 'stylesheet', type: 'text/css', href: 'whiteboard.css')
+    link(rel: 'stylesheet', href: 'css/whiteboard.css')
+    link(rel: 'shortcut icon', type: 'image/png', href: 'images/favicon.png')
   body
     section#left-bar.bar
-      img#avatar(src: 'images/avatar.jpg')
-    section#whiteboard
-      canvas
+      #profile.section
+        .long-cat
+        img#avatar(src: 'images/avatar.jpg').vert-align
+        #name Timothy Jones
+    section#center
+      canvas#whiteboard
       footer#toolbar
-        nav
+        .long-cat
+        nav.vert-align
           a#menu-button(href: 'menu.html')= "<< Menu"
     section#right-bar.bar
+      #notices.section Notices
+        ol
+          li Notice
