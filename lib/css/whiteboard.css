@@ -8,6 +8,11 @@
   display: inline-block;
   vertical-align: middle; }
 
+.unselectable {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none; }
+
 html, body, section {
   height: 100%;
   margin: 0px; }
@@ -28,6 +33,7 @@ html, body, section {
   top: 0px;
   border: 1px solid black;
   border-radius: 5px;
+  -moz-border-radius: 5px;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
@@ -52,7 +58,7 @@ html, body, section {
 
 #center {
   margin: 0px 150px;
-  padding-bottom: 34px;
+  padding-bottom: 35px;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
@@ -65,15 +71,18 @@ html, body, section {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
 
-footer {
+#center footer {
   height: 30px;
   width: 100%;
-@inlude  border-box;
-  padding: 0px 3px; }
+  padding: 0px 3px;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box; }
 
 #menu-button {
   border: 1px solid black;
   border-radius: 3px;
+  -moz-border-radius: 3px;
   color: black;
   padding: 2px 3px;
   text-decoration: none; }
