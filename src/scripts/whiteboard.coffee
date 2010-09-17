@@ -32,3 +32,22 @@ $ ->
   
   canvas[0].width  = canvas.width()
   canvas[0].height = canvas.height()
+
+$ ->
+  sections = 'whiteboard lessons admin'.split ' '
+  elements = {}
+  for section in sections then elements[section] = $ ".#{section}"
+  all = $ (".#{section}" for section in sections).join ','
+  a = $('nav a').click ->
+    a.removeClass 'active'
+    $(this).addClass 'active'
+    all.hide()
+    elements[$(this).attr 'data-click'].show()
+  if hash = document.location.hash.substring 1
+    a.eq(i).click() for section, i in sections when section is hash
+  $('.to-whiteboard').click -> a.eq(0).click()
+
+$ ->
+  img = $('#toolbar img').click ->
+    img.removeClass 'active'
+    $(this).addClass 'active'

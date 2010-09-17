@@ -16,50 +16,99 @@
   -webkit-box-sizing: border-box
   -moz-box-sizing:    border-box
 
-.unselectable
+@mixin unselectable
   user-select: none
   -webkit-user-select: none
   -moz-user-select: none
+
+.unselectable
+  @include unselectable
 
 @mixin border-radius($rad)
   border-radius:      $rad
   -moz-border-radius: $rad
 
+@mixin box-shadow($color)
+  box-shadow:         1px 1px 1px $color
+  -webkit-box-shadow: 1px 1px 1px $color
+  -moz-box-shadow:    1px 1px 1px $color
+
+@mixin no-box-shadow
+  box-shadow:         none
+  -webkit-box-shadow: none
+  -moz-box-shadow:    none
+
+ul, ol
+  margin:  0px
+  padding: 0px
+
+li
+  list-style-type: none
+
+
+// Fonts
+@font-face
+  font-family: 'Vollkorn'
+  font-style:  normal
+  font-weight: normal
+  src: local('Vollkorn Regular'), local('Vollkorn-Regular'), local('Vollkorn'), url('fonts/Vollkorn Regular.ttf') format('truetype')
+
 // Values
 $bar-width: 150px
 $footer-height: 30px
 
+
 // Document
 html, body, section
-  height: 100%
+  font-family: 'Vollkorn', arial, serif
   margin: 0px
+  background-color: rgb(210, 221, 255)
+  height: 100%
 
 .bar
   padding:    5px
   position:   fixed
-  background: #477ab3
+  background-color: #4E76E9
   top:        0px
   width:      $bar-width
   @include    border-box
 
 .section
-  padding: 5px
-  width:   100%
-  top:     0px
-  border:  1px solid black
-  @include border-radius(5px)
-  @include border-box
+  padding:       5px
+  margin-bottom: 10px
+  width:         100%
+  top:           0px
+  border:        1px solid black
+  background-color: #E8EFFF
+  @include       border-radius(5px)
+  @include       border-box
+
+.section .title
+  padding: 5px 0px
+  border-bottom: 1px solid black
+
+.section li
+  font-size: 10pt
+  margin: 15px 0px 10px 5px
+
+time, .lesson-count
+  display: block
+  font-style: italic
+  font-size: 8pt
+  text-align: right
+  padding-top: 2px
 
 #left-bar
   left: 0px
 
 #profile
-  font-size:  8pt
+  font-size:  10pt
   text-align: center
+  cursor: pointer
 
 #avatar
-  max-height:   50px
-  max-width:    50px
+  max-height: 125px
+  max-width:  125px
   img
     @include vert-align
 
@@ -68,23 +117,37 @@ html, body, section
   padding-top: 5px
 
 #center
-  // background-color: gray
   margin:           0px $bar-width
-  padding-bottom:   5px + $footer-height
+  padding-bottom:   4px + $footer-height
   @include          border-box
+
+.whiteboard
+  background-color: #4E76E9
 
 #whiteboard
   background: white
-  // border-bottom: 1px solid black
   width:      100%
   height:     100%
   @include    border-box
 
 #center footer
-  height:           $footer-height
-  width:            100%
-  padding:          0px 3px
-  @include          border-box
+  height:  $footer-height
+  width:   100%
+  padding: 0px 3px
+  @include border-box
+
+#toolbar
+  text-align: center
+
+#toolbar img
+  margin: 0px 3px
+  cursor: pointer
+  border: 1px solid #0E36A9
+  @include border-radius(3px)
+  padding: 2px
+
+#toolbar img.active
+  background-color: #2E56C9
 
 #menu-button
   border:          1px solid black
@@ -93,5 +156,101 @@ html, body, section
   padding:         2px 3px
   text-decoration: none
 
+#center .lessons
+  padding: 25px
+
+#courses>li
+  margin-bottom: 30px
+
+.course-title
+  padding: 5px 0px 10px 10px
+  margin-bottom: 10px
+  border-bottom: 1px solid black
+  font-size: 16pt
+  font-style: italic
+
+.lesson-title
+  position: absolute
+  top: 28px
+  left: 28px
+  z-index: 4
+  cursor: pointer
+  font-style: italic
+  @include unselectable
+
+.course>li, .lesson
+  display: inline-block
+
+.course>li
+  position: relative
+
+.lesson
+  width:   220px
+  height:  220px
+  margin-right: 10px
+  cursor: pointer
+
+.slide
+  position: absolute
+  background-color: rgb(254, 244, 156)
+  border: 1px solid rgb(204, 194, 106)
+  width: 200px
+  height: 200px
+
+.slide
+  top: 0px
+  left: 0px
+  z-index: 1
+
+.slide:nth-child(1)
+  top: 20px
+  left: 20px
+  z-index: 3
+
+.slide:nth-child(2)
+  top: 10px
+  left: 10px
+  z-index: 2
+
+.slide-top
+  width: 100%
+  height: 30px
+  background-color: rgb(254, 234, 61)
+  border-bottom: 1px solid rgb(204, 194, 106)
+
+.slide img
+  max-width: 200px
+  max-height: 200px
+
 #right-bar
   right: 0px
+
+nav
+  position: fixed
+  bottom:   3px
+  width:    $bar-width - 10
+  @include  border-box
+
+nav a
+  display:          block
+  color:            black
+  background-color: rgb(143, 168, 240)
+  border:           1px solid rgb(27, 29, 101)
+  text-align:       center
+  border:           1px solid black
+  @include          border-radius(3px)
+  @include          box-shadow(rgb(27, 29, 101))
+  @include          unselectable
+  cursor:           pointer
+  margin-bottom:    3px
+  height:           40px
+
+nav a:hover
+  color: rgb(0, 50, 100)
+
+nav a:active, nav a.active
+  background-color: rgb(123, 148, 220)
+  @include          no-box-shadow
+
+.empty
+  font-style: italic

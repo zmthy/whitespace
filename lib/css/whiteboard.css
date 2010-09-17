@@ -13,14 +13,29 @@
   -webkit-user-select: none;
   -moz-user-select: none; }
 
+ul, ol {
+  margin: 0px;
+  padding: 0px; }
+
+li {
+  list-style-type: none; }
+
+@font-face {
+  font-family: "Vollkorn";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Vollkorn Regular"), local("Vollkorn-Regular"), local("Vollkorn"), url("fonts/Vollkorn Regular.ttf") format("truetype"); }
+
 html, body, section {
-  height: 100%;
-  margin: 0px; }
+  font-family: "Vollkorn", arial, serif;
+  margin: 0px;
+  background-color: #d2ddff;
+  height: 100%; }
 
 .bar {
   padding: 5px;
   position: fixed;
-  background: #477ab3;
+  background-color: #4e76e9;
   top: 0px;
   width: 150px;
   box-sizing: border-box;
@@ -29,25 +44,43 @@ html, body, section {
 
 .section {
   padding: 5px;
+  margin-bottom: 10px;
   width: 100%;
   top: 0px;
   border: 1px solid black;
+  background-color: #e8efff;
   border-radius: 5px;
   -moz-border-radius: 5px;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
 
+.section .title {
+  padding: 5px 0px;
+  border-bottom: 1px solid black; }
+
+.section li {
+  font-size: 10pt;
+  margin: 15px 0px 10px 5px; }
+
+time, .lesson-count {
+  display: block;
+  font-style: italic;
+  font-size: 8pt;
+  text-align: right;
+  padding-top: 2px; }
+
 #left-bar {
   left: 0px; }
 
 #profile {
-  font-size: 8pt;
-  text-align: center; }
+  font-size: 10pt;
+  text-align: center;
+  cursor: pointer; }
 
 #avatar {
-  max-height: 50px;
-  max-width: 50px; }
+  max-height: 125px;
+  max-width: 125px; }
   #avatar img {
     display: inline-block;
     vertical-align: middle; }
@@ -58,10 +91,13 @@ html, body, section {
 
 #center {
   margin: 0px 150px;
-  padding-bottom: 35px;
+  padding-bottom: 34px;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
+
+.whiteboard {
+  background-color: #4e76e9; }
 
 #whiteboard {
   background: white;
@@ -79,6 +115,20 @@ html, body, section {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
 
+#toolbar {
+  text-align: center; }
+
+#toolbar img {
+  margin: 0px 3px;
+  cursor: pointer;
+  border: 1px solid #0e36a9;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  padding: 2px; }
+
+#toolbar img.active {
+  background-color: #2e56c9; }
+
 #menu-button {
   border: 1px solid black;
   border-radius: 3px;
@@ -87,5 +137,112 @@ html, body, section {
   padding: 2px 3px;
   text-decoration: none; }
 
+#center .lessons {
+  padding: 25px; }
+
+#courses > li {
+  margin-bottom: 30px; }
+
+.course-title {
+  padding: 5px 0px 10px 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid black;
+  font-size: 16pt;
+  font-style: italic; }
+
+.lesson-title {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  z-index: 4;
+  cursor: pointer;
+  font-style: italic;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none; }
+
+.course > li, .lesson {
+  display: inline-block; }
+
+.course > li {
+  position: relative; }
+
+.lesson {
+  width: 220px;
+  height: 220px;
+  margin-right: 10px;
+  cursor: pointer; }
+
+.slide {
+  position: absolute;
+  background-color: #fef49c;
+  border: 1px solid #ccc26a;
+  width: 200px;
+  height: 200px; }
+
+.slide {
+  top: 0px;
+  left: 0px;
+  z-index: 1; }
+
+.slide:nth-child(1) {
+  top: 20px;
+  left: 20px;
+  z-index: 3; }
+
+.slide:nth-child(2) {
+  top: 10px;
+  left: 10px;
+  z-index: 2; }
+
+.slide-top {
+  width: 100%;
+  height: 30px;
+  background-color: #feea3d;
+  border-bottom: 1px solid #ccc26a; }
+
+.slide img {
+  max-width: 200px;
+  max-height: 200px; }
+
 #right-bar {
   right: 0px; }
+
+nav {
+  position: fixed;
+  bottom: 3px;
+  width: 140px;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box; }
+
+nav a {
+  display: block;
+  color: black;
+  background-color: #8fa8f0;
+  border: 1px solid #1b1d65;
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  box-shadow: 1px 1px 1px #1b1d65;
+  -webkit-box-shadow: 1px 1px 1px #1b1d65;
+  -moz-box-shadow: 1px 1px 1px #1b1d65;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  cursor: pointer;
+  margin-bottom: 3px;
+  height: 40px; }
+
+nav a:hover {
+  color: #003264; }
+
+nav a:active, nav a.active {
+  background-color: #7b94dc;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none; }
+
+.empty {
+  font-style: italic; }
