@@ -91,13 +91,18 @@ time, .lesson-count {
 
 #center {
   margin: 0px 150px;
-  padding-bottom: 34px;
+  overflow: auto;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
 
 .whiteboard {
-  background-color: #4e76e9; }
+  background-color: #4e76e9;
+  height: 100%;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding-bottom: 34px; }
 
 #whiteboard {
   background: white;

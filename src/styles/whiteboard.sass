@@ -118,11 +118,14 @@ time, .lesson-count
 
 #center
   margin:           0px $bar-width
-  padding-bottom:   4px + $footer-height
+  overflow: auto
   @include          border-box
 
 .whiteboard
   background-color: #4E76E9
+  height: 100%
+  @include          border-box
+  padding-bottom:   4px + $footer-height
 
 #whiteboard
   background: white
