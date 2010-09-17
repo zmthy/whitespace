@@ -43,6 +43,7 @@ $ ->
     $(this).addClass 'active'
     all.hide()
     elements[$(this).attr 'data-click'].show()
+  a.eq(0).click()
   if hash = document.location.hash.substring 1
     a.eq(i).click() for section, i in sections when section is hash
   $('.to-whiteboard').click -> a.eq(0).click()
