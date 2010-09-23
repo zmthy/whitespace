@@ -12,7 +12,7 @@ html
     section#left-bar.bar
       #profile.section
         img#avatar(src: 'images/avatar.jpg')
-        #name= firstName + ' ' + lastName
+        #name= (preferredName || firstName) + ' ' + lastName 
       #online.section
         .title Notices
         ul
@@ -47,15 +47,15 @@ html
             textarea#text-input(rows: 1, cols: 1)
           input#whiteboard-image-loader(type: 'file')
         footer#toolbar
-          - for (i in icons = 'marker pencil text eraser image fill'.split(' '))
-            img(src: 'images/icons/' + icons[i] + '.png', width: '20px', height: '20px', class: i == 1 ? 'active' : '', data-type: icons[i])
+          - for (i in icons = 'pencil marker text eraser image fill'.split(' '))
+            img(src: 'images/icons/' + icons[i] + '.png', width: '20px', height: '20px', class: i == 0 ? 'active' : '', data-type: icons[i])
       .lessons
         - courses = { Mathematics: { Algebra: 3, 'Algebra II': 2, Geometry: 3 }, English: { Hamlet: 3, 'King Lear': 2, Othello: 2, 'The Tempest': 2 } }
         ul#courses.fancy-list
           - for (course in courses)
             li
               .fancy-title= course
-                a.add-lesson Add New Lesson
+                a.add-lesson New Lesson
               ul.course
                 - for (lesson in course = courses[course])
                   li
@@ -64,7 +64,10 @@ html
                       - for (i = 0; i < course[lesson]; ++i)
                         li.slide
                           .slide-top
-                          img(src: 'images/slides/' + lesson + '.png')
+                          - if (lesson === 'Hamlet')
+                            canvas(width: '800px', height: '600px', data-slide: i)
+                          - else if (i === 0)
+                            img(src: 'images/slides/' + lesson + '.png')
       .admin
         ul.fancy-list
           li
@@ -72,16 +75,16 @@ html
             ul.input-list
               li
                 label First Name:
-                input(value: firstName)
+                input#edit-first-name(value: firstName)
               li
                 label Last Name:
-                input(value: lastName)
+                input#edit-last-name(value: lastName)
               li
                 label Preferred Name:
-                input(value: preferredName)
+                input#edit-preferred-name(value: preferredName)
               li
                 label Avatar:
-                input(type: 'file', value: 'lasers?!?!?!??!.png')
+                input(type: 'file')
           li
             .fancy-title English
             #students.input-list
@@ -118,13 +121,14 @@ html
           .title Lesson
             a#add-slide New Slide
           ol
-            li#current-slide First Header
-            li Second Header
-            li Third Header
+            li#current-slide(data-slide: 0) First Header
+            li(data-slide: 1) Second Header
+            li(data-slide: 2) Third Header
         #announcements.section
           .title Announcements
           ul
             li.empty No announcements
+          input
         #chat.section
           .title Chat
           ul
@@ -148,6 +152,7 @@ html
               time 10:00 AM, 21 / 9 / 2010
         #course-list.section
           .title Courses
+            a New Course
           ul
             li
               a(href: '#').course-li Mathematics
@@ -155,5 +160,4 @@ html
             li
               a(href: '#').course-li English
               .lesson-count 4 Lessons, 9 Slides
-          a Add New Course
       .admin

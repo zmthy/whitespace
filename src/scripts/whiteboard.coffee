@@ -3,6 +3,14 @@ doc = $ document
 drawing = true
 lineWidth = 1
 strokeStyle = 'black'
+backColor = 'white'
+
+slides = []
+$ ->
+  canvas = $('#whiteboard')[0]
+  context = canvas.getContext '2d'
+  blank = context.getImageData 0, 0, canvas.width, canvas.height
+  slides.push blank for i in [0..3]
 
 $ ->
   down = no
@@ -36,6 +44,8 @@ $ ->
   canvas[0].height = canvas.height()
 
 $ ->
+  canvas   = $('#whiteboard')[0]
+  context  = canvas.getContext '2d'
   sections = 'whiteboard lessons admin'.split ' '
   elements = {}
   for section in sections then elements[section] = $ ".#{section}"
@@ -44,6 +54,10 @@ $ ->
     a.removeClass 'active'
     $(this).addClass 'active'
     all.hide()
+    slides[$('#current-slide').attr 'data-slide'] =
+        context.getImageData 0, 0, canvas.width, canvas.height
+    $.each $('.slide canvas'), ->
+      this.getContext('2d').putImageData slides[$(this).attr 'data-slide'], 0, 0
     elements[$(this).attr 'data-click'].show()
   a.eq(1).click()
   if hash = document.location.hash.substring 1
@@ -85,7 +99,7 @@ $ ->
     pencil: -> lineWidth = 1
     eraser: ->
       lineWidth = 20
-      strokeStyle = 'white'
+      context.globalCompositeOperation = 'destination-out'
     text: ->
       whiteboard.css 'cursor', 'text'
       drawing = false
@@ -96,14 +110,18 @@ $ ->
         textInput.focus().val('').css
           left: (textInput.x = evt.pageX - offset.left) - 5
           top:  (textInput.y = evt.pageY - offset.top) - 5
-    image: ->
-      imageLoader.click()
+    image: -> imageLoader.click()
+    fill: ->
+      context.fillStyle = backColor = 'green'
+      context.globalCompositeOperation = 'destination-over'
+      context.fillRect 0, 0, whiteboard[0].width, whiteboard[0].height
   
   img = $('#toolbar img').click ->
     img.removeClass 'active'
     $(this).addClass 'active'
     strokeStyle = 'black'
     whiteboard.css 'cursor', 'default'
+    context.globalCompositeOperation = 'source-over'
     drawing = true
     type() if type = types[$(this).attr 'data-type']
 
@@ -124,7 +142,27 @@ $ ->
 
 $ ->
   header = $('#whiteboard-header')
+  canvas = $('#whiteboard')[0]
+  context = canvas.getContext('2d')
   $('#lesson li').click ->
-    $('#current-slide').removeAttr 'id'
+    current = $('#current-slide').removeAttr 'id'
+    slides[current.attr 'data-slide'] = context.getImageData 0, 0, canvas.width, canvas.height
     $(this).attr 'id', 'current-slide'
     header.text $(this).text()
+    canvas.width = canvas.width
+    context.putImageData slides[$(this).attr 'data-slide'], 0, 0
+
+$ ->
+  name = $ '#name'
+  preferred = $('#edit-preferred-name').keyup nameFn = ->
+    name.text "#{(if val = preferred.val() then val else first.val())} #{last.val()}"
+  first = $('#edit-first-name').keyup nameFn
+  last  = $('#edit-last-name').keyup nameFn
+
+$ ->
+  ul = $ '#announcements ul'
+  input = $('#announcements input').keydown (evt) -> if evt.which is 13
+    ul.children('.empty').remove()
+    ul.append "<li>#{input.val()}</li>"
+    input.val ''
+  

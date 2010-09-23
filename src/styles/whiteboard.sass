@@ -204,7 +204,7 @@ time, .lesson-count
   font-size: 16pt
   font-style: italic
 
-.add-lesson, #add-slide
+.add-lesson, #add-slide, .title a
   float: right
   font-size: 8pt
 
@@ -234,7 +234,7 @@ time, .lesson-count
   background-color: rgb(254, 244, 156)
   border: 1px solid rgb(204, 194, 106)
   width: 200px
-  height: 200px
+  height: 180px
 
 .slide
   top: 0px
@@ -256,10 +256,11 @@ time, .lesson-count
   height: 30px
   background-color: rgb(254, 234, 61)
   border-bottom: 1px solid rgb(204, 194, 106)
+  @include border-box
 
-.slide img
+.slide canvas, .slide img
   max-width: 200px
-  max-height: 200px
+  max-height: 150px
 
 #right-bar
   right: 0px
@@ -349,3 +350,7 @@ nav a:active, nav a.active
   left: 0px
   display: none
   text-align: left
+
+#announcements input
+  width: 100%
+  @include border-box
