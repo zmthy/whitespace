@@ -26,6 +26,12 @@ li {
   font-weight: normal;
   src: local("Vollkorn Regular"), local("Vollkorn-Regular"), local("Vollkorn"), url("fonts/Vollkorn Regular.ttf") format("truetype"); }
 
+@font-face {
+  font-family: "Inconsolata";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Inconsolata"), url("fonts/Inconsolata.ttf") format("truetype"); }
+
 html, body, section {
   font-family: "Vollkorn", arial, serif;
   margin: 0px;
@@ -37,7 +43,7 @@ html, body, section {
   position: fixed;
   background-color: #4e76e9;
   top: 0px;
-  width: 150px;
+  width: 200px;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
@@ -90,29 +96,46 @@ time, .lesson-count {
   padding-top: 5px; }
 
 #center {
-  margin: 0px 150px;
+  margin: 0px 200px;
   overflow: auto;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
 
-.whiteboard {
+#center .whiteboard {
   background-color: #4e76e9;
   height: 100%;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  padding-bottom: 34px; }
-
-#whiteboard {
-  background: white;
-  width: 100%;
-  height: 100%;
+  padding: 34px 0px;
+  text-align: center;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
 
-#center footer {
+#whiteboard-container {
+  display: inline-block;
+  border: 1px solid black;
+  background-color: white;
+  width: 800px;
+  height: 600px;
+  overflow: hidden;
+  position: relative; }
+
+#whiteboard-header {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16pt;
+  display: inline; }
+
+#previous-slide, #next-slide {
+  cursor: pointer; }
+
+#previous-slide {
+  float: left; }
+
+#next-slide {
+  float: right; }
+
+#center footer, #center header {
   height: 30px;
   width: 100%;
   padding: 0px 3px;
@@ -134,6 +157,12 @@ time, .lesson-count {
 #toolbar img.active {
   background-color: #2e56c9; }
 
+#lesson li {
+  cursor: pointer; }
+
+#current-slide {
+  color: red; }
+
 #menu-button {
   border: 1px solid black;
   border-radius: 3px;
@@ -142,18 +171,23 @@ time, .lesson-count {
   padding: 2px 3px;
   text-decoration: none; }
 
-#center .lessons {
-  padding: 25px; }
+#center .lessons, .admin {
+  padding: 25px;
+  text-align: left; }
 
-#courses > li {
+.fancy-list > li {
   margin-bottom: 30px; }
 
-.course-title {
+.fancy-title {
   padding: 5px 0px 10px 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid black;
   font-size: 16pt;
   font-style: italic; }
+
+.add-lesson, #add-slide {
+  float: right;
+  font-size: 8pt; }
 
 .lesson-title {
   position: absolute;
@@ -213,10 +247,47 @@ time, .lesson-count {
 #right-bar {
   right: 0px; }
 
+.input-list {
+  padding: 10px; }
+
+.input-list > li {
+  display: inline-block;
+  margin-right: 10px; }
+
+.input-list label {
+  display: inline-block;
+  margin-right: 10px; }
+
+#students {
+  display: inline-block;
+  margin-right: 20px; }
+
+#students label {
+  display: block;
+  margin-bottom: 10px; }
+
+#students a {
+  float: right;
+  font-size: 8pt; }
+
+#students select {
+  height: 400px;
+  width: 250px; }
+
+#student-properties {
+  display: inline-block;
+  vertical-align: top; }
+
+#permissions li {
+  display: list-item; }
+
+#permissions input {
+  margin-right: 15px; }
+
 nav {
   position: fixed;
   bottom: 3px;
-  width: 140px;
+  width: 190px;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
@@ -251,3 +322,22 @@ nav a:active, nav a.active {
 
 .empty {
   font-style: italic; }
+
+#text-input {
+  position: relative;
+  border: 1px solid gray;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  font-family: "Inconsolata", arial, serif;
+  font-size: 12pt;
+  background: none; }
+
+#whiteboard-input-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  display: none;
+  text-align: left; }

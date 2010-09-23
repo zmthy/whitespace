@@ -1,3 +1,4 @@
+- firstName = 'Timothy'; lastName = 'Jones'; preferredName = 'Tim'
 !!! 5
 html
   head
@@ -11,7 +12,7 @@ html
     section#left-bar.bar
       #profile.section
         img#avatar(src: 'images/avatar.jpg')
-        #name Timothy Jones
+        #name= firstName + ' ' + lastName
       #online.section
         .title Notices
         ul
@@ -36,16 +37,25 @@ html
           span.vert-align Admin
     section#center
       .whiteboard
-        canvas#whiteboard
+        header
+          a#previous-slide <<
+          a#next-slide >>
+          #whiteboard-header First Header
+        #whiteboard-container
+          canvas#whiteboard(width: '800px', height: '600px')
+          #whiteboard-input-container
+            textarea#text-input(rows: 1, cols: 1)
+          input#whiteboard-image-loader(type: 'file')
         footer#toolbar
-          - for (i in icons = 'marker pencil text eraser image'.split(' '))
-            img(src: 'images/icons/' + icons[i] + '.png', width: '20px', height: '20px', class: i == 1 ? 'active' : '')
+          - for (i in icons = 'marker pencil text eraser image fill'.split(' '))
+            img(src: 'images/icons/' + icons[i] + '.png', width: '20px', height: '20px', class: i == 1 ? 'active' : '', data-type: icons[i])
       .lessons
         - courses = { Mathematics: { Algebra: 3, 'Algebra II': 2, Geometry: 3 }, English: { Hamlet: 3, 'King Lear': 2, Othello: 2, 'The Tempest': 2 } }
-        ul#courses
+        ul#courses.fancy-list
           - for (course in courses)
             li
-              .course-title= course
+              .fancy-title= course
+                a.add-lesson Add New Lesson
               ul.course
                 - for (lesson in course = courses[course])
                   li
@@ -56,14 +66,65 @@ html
                           .slide-top
                           img(src: 'images/slides/' + lesson + '.png')
       .admin
+        ul.fancy-list
+          li
+            .fancy-title Profile
+            ul.input-list
+              li
+                label First Name:
+                input(value: firstName)
+              li
+                label Last Name:
+                input(value: lastName)
+              li
+                label Preferred Name:
+                input(value: preferredName)
+              li
+                label Avatar:
+                input(type: 'file', value: 'lasers?!?!?!??!.png')
+          li
+            .fancy-title English
+            #students.input-list
+              a Add Participant
+              label Participants
+              select(multiple)
+                option Bisley, Matthew
+                option McMillan, Carl
+                option Robinson, Thomas
+            ul#student-properties.input-list
+              li Permissions
+                ul#permissions.input-list
+                  li
+                    input(type: 'checkbox', checked)
+                    label Chat
+                  li
+                    input(type: 'checkbox', checked)
+                    label Drawing
+                  li
+                    input(type: 'checkbox', checked)
+                    label Eraser
+                  li
+                    input(type: 'checkbox')
+                    label Image
+                  li
+                    input(type: 'checkbox')
+                    label Background
+                  li
+                    input(type: 'checkbox')
+                    label Clear
     section#right-bar.bar
       .whiteboard
         #lesson.section
           .title Lesson
+            a#add-slide New Slide
           ol
-            li Draw a circle.
-            li Write some text.
-            li Insert a picture.
+            li#current-slide First Header
+            li Second Header
+            li Third Header
+        #announcements.section
+          .title Announcements
+          ul
+            li.empty No announcements
         #chat.section
           .title Chat
           ul
@@ -94,4 +155,5 @@ html
             li
               a(href: '#').course-li English
               .lesson-count 4 Lessons, 9 Slides
+          a Add New Course
       .admin
