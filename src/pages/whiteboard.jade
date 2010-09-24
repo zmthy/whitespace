@@ -6,6 +6,7 @@ html
     link(rel: 'stylesheet', href: 'css/whiteboard.css')
     link(rel: 'shortcut icon', type: 'image/png', href: 'images/favicon.png')
     script(src: 'js/jquery.min.js')
+    script(src: '/socket.io/socket.io.js')
     script(src: 'js/whiteboard.js')
   body
     - sections = { whiteboard: 'Whiteboard', lessons: 'Lessons', admin: 'Admin'}
@@ -118,7 +119,8 @@ html
     section#right-bar.bar
       .whiteboard
         #lesson.section
-          .title Lesson
+          .title
+            | Lesson
             a#add-slide New Slide
           ol
             li#current-slide(data-slide: 0) First Header
@@ -151,7 +153,8 @@ html
               a.to-whiteboard(href: '#whiteboard') Geometry
               time 10:00 AM, 21 / 9 / 2010
         #course-list.section
-          .title Courses
+          .title
+            | Courses
             a New Course
           ul
             li

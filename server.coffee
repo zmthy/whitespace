@@ -1,10 +1,15 @@
 connect = require 'connect'
 express = require 'express'
-ws = require 'websocket-server'
+io = require 'socket.io'
 
 app = express.createServer()
 app.use connect.staticProvider __dirname + '/lib'
 
 app.get '/', (req, res) -> res.redirect '/whiteboard.html'
+
+socket = io.listen app
+
+socket.on 'connection', (client) ->
+  client.on 'message', (message) -> client.broadcast message
 
 app.listen 80

@@ -28,6 +28,12 @@ $ ->
     html.addClass 'unselectable'
     down = yes
   
+  window.drawLine = (x1, y1, x2, y2) ->
+    context.moveTo x1, y1
+    context.lineTo x2, y2
+    context.stroke()
+    context.moveTo x, y
+  
   doc.mousemove (evt) ->
     return unless drawing
     offset = canvas.offset()
@@ -171,6 +177,9 @@ $ ->
     input.val ''
 
 $ ->
-  ws = new WebSocket 'ws://bitroar:3001/'
-  ws.onmessage = (evt) -> puts evt.message
-  window.sendLine = (x1, y1, x2, y2) -> ws.send "{line: [#{x1}, #{y1}, #{x2}, #{y2}]}"
+  socket = new io.Socket
+  socket.on 'message', (message) ->
+    message = JSON.parse message
+    drawLine line... if line = message.line
+  window.sendLine = (x1, y1, x2, y2) -> socket.send "{\"line\": [#{x1}, #{y1}, #{x2}, #{y2}]}"
+  socket.connect()
