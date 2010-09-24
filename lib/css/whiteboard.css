@@ -24,13 +24,13 @@ li {
   font-family: "Vollkorn";
   font-style: normal;
   font-weight: normal;
-  src: local("Vollkorn Regular"), local("Vollkorn-Regular"), local("Vollkorn"), url("fonts/Vollkorn Regular.ttf") format("truetype"); }
+  src: local("Vollkorn Regular"), local("Vollkorn-Regular"), local("Vollkorn"), url("/fonts/Vollkorn Regular.ttf") format("truetype"); }
 
 @font-face {
   font-family: "Inconsolata";
   font-style: normal;
   font-weight: normal;
-  src: local("Inconsolata"), url("fonts/Inconsolata.ttf") format("truetype"); }
+  src: local("Inconsolata"), url("/fonts/Inconsolata.ttf") format("truetype"); }
 
 html, body, section {
   font-family: "Vollkorn", arial, serif;
