@@ -13,6 +13,8 @@ $ ->
   slides.push blank for i in [0..3]
 
 $ ->
+  x = -1
+  y = -1
   down = no
   
   html = $('html')
@@ -22,7 +24,7 @@ $ ->
     context.lineWidth = lineWidth
     context.strokeStyle = strokeStyle
     context.beginPath()
-    context.moveTo evt.pageX - offset.left, evt.pageY - offset.top
+    context.moveTo x = evt.pageX - offset.left, y = evt.pageY - offset.top
     html.addClass 'unselectable'
     down = yes
   
@@ -30,8 +32,10 @@ $ ->
     return unless drawing
     offset = canvas.offset()
     if down
-      context.lineTo evt.pageX - offset.left, evt.pageY - offset.top
+      sendLine x, y, x = evt.pageX - offset.left, y = evt.pageY - offset.top
+      context.lineTo x, y 
       context.stroke()
+      
   .mouseup (evt) ->
     if down
       html.removeClass 'unselectable'
@@ -166,8 +170,7 @@ $ ->
     ul.append "<li>#{input.val()}</li>"
     input.val ''
 
-sendLine = null
 $ ->
-  socket = new WebSocket 'ws://bitroar.com/ws'
-  socket.onmessage = (evt) ->
-  sendLine = (x1, y1, x2, y2) -> socket.send "{line: [#{x1}, #{y1}, #{x2}, #{y2}]}"
+  ws = new WebSocket 'ws://bitroar:81/'
+  ws.onmessage = (evt) -> puts evt.message
+  window.sendLine = (x1, y1, x2, y2) -> socket.send "{line: [#{x1}, #{y1}, #{x2}, #{y2}]}"

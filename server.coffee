@@ -1,15 +1,20 @@
 connect = require 'connect'
 express = require 'express'
-io = require 'socket.io'
+ws = require 'websocket-server'
 
 app = express.createServer()
 app.use connect.staticProvider __dirname + '/lib'
 
 app.get '/', (req, res) -> res.redirect '/whiteboard.html'
 
-socket = io.listen app
+app.listen 80
 
+socket = ws.createServer()
+
+clients = []
 socket.on 'connection', (client) ->
-  puts "!"
+  clients.push client
+  client.on 'message', (message) ->
+    socket.send other.id, '!' for other in clients when other isnt client
 
-app.listen 8080
+socket.listen 81
