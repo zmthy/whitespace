@@ -173,4 +173,4 @@ $ ->
 $ ->
   ws = new WebSocket 'ws://bitroar:81/'
   ws.onmessage = (evt) -> puts evt.message
-  window.sendLine = (x1, y1, x2, y2) -> socket.send "{line: [#{x1}, #{y1}, #{x2}, #{y2}]}"
+  window.sendLine = (x1, y1, x2, y2) -> ws.send "{line: [#{x1}, #{y1}, #{x2}, #{y2}]}"
