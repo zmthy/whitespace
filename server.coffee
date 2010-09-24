@@ -15,6 +15,6 @@ clients = []
 socket.on 'connection', (client) ->
   clients.push client
   client.on 'message', (message) ->
-    socket.send other.id, '!' for other in clients when other isnt client
+    socket.send other.id, message for other in clients when other isnt client
 
-socket.listen 81
+socket.listen 143

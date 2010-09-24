@@ -171,6 +171,6 @@ $ ->
     input.val ''
 
 $ ->
-  ws = new WebSocket 'ws://bitroar:81/'
+  ws = new WebSocket 'ws://bitroar:143/'
   ws.onmessage = (evt) -> puts evt.message
   window.sendLine = (x1, y1, x2, y2) -> ws.send "{line: [#{x1}, #{y1}, #{x2}, #{y2}]}"
