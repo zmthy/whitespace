@@ -165,4 +165,9 @@ $ ->
     ul.children('.empty').remove()
     ul.append "<li>#{input.val()}</li>"
     input.val ''
-  
+
+sendLine = null
+$ ->
+  socket = new WebSocket 'ws://bitroar.com/ws'
+  socket.onmessage = (evt) ->
+  sendLine = (x1, y1, x2, y2) -> socket.send "{line: [#{x1}, #{y1}, #{x2}, #{y2}]}"
