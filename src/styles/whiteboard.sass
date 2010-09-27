@@ -149,13 +149,13 @@ time, .lesson-count
   font-size: 16pt
   display: inline
 
-#previous-slide, #next-slide
+[data-slide]
   cursor: pointer
 
-#previous-slide
+[data-slide=prev]
   float: left
 
-#next-slide
+[data-slide=next]
   float: right
 
 #center footer, #center header
@@ -180,7 +180,7 @@ time, .lesson-count
 #lesson li
   cursor: pointer
 
-#current-slide
+#lesson li.active
   color: red
 
 #menu-button
@@ -339,7 +339,7 @@ nav a:active, nav a.active
   resize: none
   overflow: hidden
   font-family: 'Inconsolata', arial, serif
-  font-size: 12pt
+  font-size: 12px
   background: none
 
 #whiteboard-input-container
@@ -354,3 +354,14 @@ nav a:active, nav a.active
 #announcements input
   width: 100%
   @include border-box
+
+#extras>*
+  display: none
+
+.color
+  border: none
+  width: 50px
+  text-align: center
+
+#toolbar img
+  vertical-align: middle

@@ -1,167 +1,251 @@
+# Helper
 puts = -> console?.log.apply console, arguments
-doc = $ document
-drawing = true
-lineWidth = 1
-strokeStyle = 'black'
-backColor = 'white'
 
+# Elements
+doc = html = wb = el = cxt = null
+
+# Slide contents
 slides = []
-$ ->
-  canvas = $('#whiteboard')[0]
-  context = canvas.getContext '2d'
-  blank = context.getImageData 0, 0, canvas.width, canvas.height
-  slides.push blank for i in [0..3]
 
+# Element setup
 $ ->
-  x = -1
-  y = -1
-  down = no
-  
-  html = $('html')
-  canvas = $('#whiteboard')
-  .mousedown (evt) ->
-    offset = canvas.offset()
-    context.lineWidth = lineWidth
-    context.strokeStyle = strokeStyle
-    context.beginPath()
-    context.moveTo x = evt.pageX - offset.left, y = evt.pageY - offset.top
-    html.addClass 'unselectable'
-    down = yes
-  
-  window.drawLine = (x1, y1, x2, y2) ->
-    context.moveTo x1, y1
-    context.lineTo x2, y2
-    context.stroke()
-    context.moveTo x, y
-  
-  doc.mousemove (evt) ->
-    return unless drawing
-    offset = canvas.offset()
-    if down
-      sendLine x, y, x = evt.pageX - offset.left, y = evt.pageY - offset.top
-      context.lineTo x, y 
-      context.stroke()
-      
-  .mouseup (evt) ->
-    if down
-      html.removeClass 'unselectable'
-      down = no
-  
-  context = canvas[0].getContext '2d'
-  context.strokeStyle = '#000'
-  
-  canvas[0].width  = canvas.width()
-  canvas[0].height = canvas.height()
+  doc = $ document
+  html = $ document.documentElement
+  wb = $ '#whiteboard'
+  el = wb[0]
+  cxt = el.getContext '2d'
 
+# Section navigation
 $ ->
-  canvas   = $('#whiteboard')[0]
-  context  = canvas.getContext '2d'
   sections = 'whiteboard lessons admin'.split ' '
   elements = {}
   for section in sections then elements[section] = $ ".#{section}"
-  all = $ (".#{section}" for section in sections).join ','
-  a = $('nav a').click ->
-    a.removeClass 'active'
-    $(this).addClass 'active'
-    all.hide()
-    slides[$('#current-slide').attr 'data-slide'] =
-        context.getImageData 0, 0, canvas.width, canvas.height
-    $.each $('.slide canvas'), ->
-      this.getContext('2d').putImageData slides[$(this).attr 'data-slide'], 0, 0
-    elements[$(this).attr 'data-click'].show()
-  a.eq(1).click()
-  if hash = document.location.hash.substring 1
-    a.eq(i).click() for section, i in sections when section is hash
-  $('.to-whiteboard').click -> a.eq(0).click()
+  sections = $ (".#{section}" for section in sections).join ','
+  swap = (section) ->
+    return unless elements[section]
+    sections.hide()
+    elements[section].show()
+    swappers.removeClass 'active'
+    $("[data-section=#{section}]").addClass 'active'
+  swappers = $('[data-section]').click -> swap $(this).attr 'data-section'
+  swap if hash = document.location.hash.substring 1 then hash else 'lessons'
 
+# Header editing
+editHead = null
 $ ->
-  whiteboard = $ '#whiteboard'
-  context = whiteboard[0].getContext '2d'
-  context.font = '12pt Inconsolata, arial, sans-serif'
-  context.textBaseline = 'top'
-  
-  textInput = $('#text-input')
-  .blur ->
-    inputContainer.hide()
-    puts textInput.val()
-    for line, i in textInput.val().split '\n'
-      context.fillText line, textInput.x, textInput.y + i * 17
-    textInput.val('').attr
-      rows: 1
-      cols: 1
-  .keyup adjust = ->
-    text = textInput.val()
-    textInput.attr 'rows', (text = text.split('\n')).length
-    max = 0
-    for line in text
-      if line.length > max then max = line.length
-    textInput.attr 'cols', if max is 0 then 1 else max
-  .keydown (evt) ->
-    if evt.which is 13
-      textInput.attr 'rows', textInput.attr('rows') + 1
-    else adjust()
-  
-  inputContainer = $ '#whiteboard-input-container'
-  imageLoader = $ '#whiteboard-image-loader'
-  
-  types =
-    marker: -> lineWidth = 5
-    pencil: -> lineWidth = 1
-    eraser: ->
-      lineWidth = 20
-      context.globalCompositeOperation = 'destination-out'
-    text: ->
-      whiteboard.css 'cursor', 'text'
-      drawing = false
-      whiteboard.click (evt) ->
-        return if drawing
-        inputContainer.show()
-        offset = inputContainer.offset()
-        textInput.focus().val('').css
-          left: (textInput.x = evt.pageX - offset.left) - 5
-          top:  (textInput.y = evt.pageY - offset.top) - 5
-    image: -> imageLoader.click()
-    fill: ->
-      context.fillStyle = backColor = 'green'
-      context.globalCompositeOperation = 'destination-over'
-      context.fillRect 0, 0, whiteboard[0].width, whiteboard[0].height
-  
-  img = $('#toolbar img').click ->
-    img.removeClass 'active'
-    $(this).addClass 'active'
-    strokeStyle = 'black'
-    whiteboard.css 'cursor', 'default'
-    context.globalCompositeOperation = 'source-over'
-    drawing = true
-    type() if type = types[$(this).attr 'data-type']
-
-$ ->
-  editing = false
   input = $ '<input>'
+  editHead = (text) ->
+    header.text text
+    $('#lesson li.active').text text
   header = $('#whiteboard-header').click bound = ->
     input.val header.text()
     header.html input
     header.unbind 'click', bound
     input.blur ->
-      header.text val = input.val()
-      $('#current-slide').text val
+      editHead text = input.val()
       header.click bound
       doc.unbind 'keypress', press
+      send.header text
     input.focus()
     doc.keypress press = (evt) -> input.blur() if evt.which is 13
 
+# Slide navigation
+changeSlide = null
 $ ->
-  header = $('#whiteboard-header')
-  canvas = $('#whiteboard')[0]
-  context = canvas.getContext('2d')
-  $('#lesson li').click ->
-    current = $('#current-slide').removeAttr 'id'
-    slides[current.attr 'data-slide'] = context.getImageData 0, 0, canvas.width, canvas.height
-    $(this).attr 'id', 'current-slide'
-    header.text $(this).text()
-    canvas.width = canvas.width
-    context.putImageData slides[$(this).attr 'data-slide'], 0, 0
+  count = 0
+  header = $ '#whiteboard-header'
+  focussed = false
+  $('input, textarea').live 'focus', ->
+    focussed = true
+  .live 'blur', ->
+    focussed = false
+    true
+  b = $('[data-slide]').live 'click', move = ->
+    slides[count] = cxt.getImageData 0, 0, el.width, el.height
+    slide = $(this).attr 'data-slide'
+    if slide is 'next' then (if count < slides.length - 2 then count += 1)
+    else if slide is 'prev' then (if count > 0 then count -= 1)
+    else count = slide
+    b.removeClass 'active'
+    which = $("[data-slide=#{count}]").addClass 'active'
+    header.text which.text()
+    el.width = el.width
+    cxt.putImageData slides[count], 0, 0
+  prev = $('[data-slide=prev]')[0]
+  next = $('[data-slide=next]')[0]
+  doc.keyup (evt) ->
+    return if focussed
+    switch evt.which
+      when 37 then move.call prev
+      when 39 then move.call next
 
+# Blank slides
+$ ->
+  blank = cxt.getImageData 0, 0, el.width, el.height
+  slides.push blank for i in [0..3]
+
+# Drawing vars
+vars = 
+  size: 5
+  color: 'black'
+  font: 12
+
+# Drawing functions
+draw = null
+$ ->
+  background = $ '#whiteboard-container'
+  
+  reset = (size, stroke, erase) ->
+    cxt.lineWidth = size or vars.size
+    cxt.strokeStyle = stroke or vars.color
+    cxt.fillStyle = stroke or vars.color
+    cxt.globalCompositeOperation = if erase then 'destination-out' else 'source-over'
+    cxt.beginPath()
+
+  drawLine = (x1, y1, x2, y2) ->
+    cxt.moveTo x1, y1
+    cxt.lineTo x2, y2
+    cxt.stroke()
+
+  drawText = (x, y, text, size) ->
+    cxt.font = "#{font = size or vars.font}px Inconsolata, arial, sans-serif"
+    cxt.textBaseline = 'top'
+    for line, i in text.split '\n'
+      cxt.fillText line, x, y + i * font + i * font / 12
+
+  draw =
+    pencil: (x1, y1, x2, y2, size, color) ->
+      reset 1, color
+      drawLine x1, y1, x2, y2
+    marker: (x1, y1, x2, y2, size, color) ->
+      reset size, color
+      drawLine x1, y1, x2, y2
+    eraser: (x1, y1, x2, y2, size, color) ->
+      reset size, color, true
+      drawLine x1, y1, x2, y2
+    text: (x, y, text, size, color) ->
+      reset null, color
+      drawText x, y, text, size
+    fill: (color) ->
+      background.css 'background-color': color or vars.color
+
+# Icons
+icon = 'pencil'
+$ ->
+  tools = $('#toolbar [data-type]').click ->
+    $('#extras>*').hide()
+    $("#extras [data-icon=#{icon = $(this).attr 'data-type'}]").show()
+    wb.css cursor: 'default'
+    tools.removeClass 'active'
+    $(this).addClass 'active'
+
+# Dragging the mouse
+$ ->
+  movers = 'pencil marker eraser'.split ' '
+  unselectable = 'unselectable'
+  x = y = null
+  coords = (x, y) -> [x - (o = wb.offset()).left, y - o.top]
+  extras = $('#extras').find('[data-icon=eraser],[data-icon=marker]')
+  .find('input').change change = ->
+    extras.val vars.size = $(this).val()
+  .click change
+  wb.mousedown (evt) ->
+    for mover in movers when mover is icon
+      html.addClass unselectable
+      doc.mousemove(move).mouseup(up)
+      [x, y] = coords evt.pageX, evt.pageY
+      break
+  move = (evt) ->
+    args = [ x, y, ([x, y] = coords evt.pageX, evt.pageY)... ]
+    draw[icon] args...
+    send.line icon, args...
+  up = (evt) ->
+    doc.unbind 'mousemove', move
+    doc.unbind 'mouseup', up
+    html.removeClass unselectable
+
+# Text
+$ ->
+  cont = $ '#whiteboard-input-container'
+  input = $ '#text-input'
+  size = $ '#font-size input'
+  $('#toolbar [data-type=text]').click ->
+    wb.css cursor: 'text'
+  size.change change = ->
+    vars.font = font = $(this).val()
+    input.css 'font-size', font + 'px'
+  .click change
+  wb.mousedown (evt) ->
+    if icon is 'text'
+      cont.show()
+      offset = cont.offset()
+      input.val('').focus().css
+        left: (input.x = evt.pageX - offset.left) - 5
+        top:  (input.y = evt.pageY - offset.top) - 5
+        color: vars.color
+      false
+  input.blur ->
+    cont.hide()
+    draw.text input.x, input.y, text = input.val()
+    send.text input.x, input.y, text
+    input.val('').attr rows: 1, cols: 1
+  .keyup adjust = ->
+    text = input.val()
+    input.attr 'rows', (text = text.split '\n').length
+    max = 1
+    for line in text when line.length > max then max = line.length
+    input.attr 'cols', max
+  .keydown (evt) ->
+    if evt.which is 13 then input.attr 'rows', input.attr('rows') + 1
+    else adjust()
+
+# Fill
+$ ->
+  $('[data-type=fill]').click ->
+    draw.fill()
+    send.fill()
+
+# Colour
+$ -> $('.color').change -> vars.color = '#' + $(this).val()
+
+# Students
+$ ->
+  defPer = chat: true, drawing: true, eraser: true
+  students = [
+    {
+      first: 'Matthew'
+      last: 'Bisley'
+      permissions:
+        chat: true
+        drawing: true
+        eraser: true
+    }, {
+      first: 'Carl'
+      last: 'McMillan'
+      permissions:
+        drawing: true
+    }, {
+      first: 'Thomas'
+      last: 'Robinson'
+      permissions:
+        chat: true
+        drawing: true
+        eraser: true
+        image: true
+        background: true
+    }
+  ]
+  student = students[0]
+  $('#students select').change ->
+    student = students[$(this).val()]
+    $.each inputs, ->
+      if student.permissions[$(this).attr 'data-permission']
+        $(this).attr 'checked', 'checked'
+      else $(this).removeAttr 'checked'
+  inputs = $('#permissions input').change ->
+    student.permissions[$(this).attr 'data-permission'] = Boolean $(this).attr 'checked'
+
+# Name editing
 $ ->
   name = $ '#name'
   preferred = $('#edit-preferred-name').keyup nameFn = ->
@@ -169,17 +253,46 @@ $ ->
   first = $('#edit-first-name').keyup nameFn
   last  = $('#edit-last-name').keyup nameFn
 
+# Announcements
+announce = null
 $ ->
   ul = $ '#announcements ul'
-  input = $('#announcements input').keydown (evt) -> if evt.which is 13
+  announce = (text) ->
     ul.children('.empty').remove()
-    ul.append "<li>#{input.val()}</li>"
+    ul.append "<li>#{text}</li>"
     input.val ''
+  input = $('#announcements input').keydown (evt) -> if evt.which is 13
+    announce text = input.val()
+    send.announce text
 
+# Socket
+send = null
 $ ->
   socket = new io.Socket
   socket.on 'message', (message) ->
     message = JSON.parse message
-    drawLine line... if line = message.line
-  window.sendLine = (x1, y1, x2, y2) -> socket.send "{\"line\": [#{x1}, #{y1}, #{x2}, #{y2}]}"
+    puts message
+    data = message.data
+    switch message.op
+      when 'draw'
+        if message.type of { 'pencil', 'marker', 'eraser' }
+          draw[message.type] data.x1, data.y1, data.x2, data.y2, data.size, data.color
+        else if message.type is 'text'
+          draw.text data.x, data.y, data.text, data.size, data.color
+        else if message.type is 'fill'
+          draw.fill data.color
+      when 'announce' then announce data
+      when 'header' then editHead data
+  doSend = (op, type, data) -> socket.send JSON.stringify { op, type, data }
+  send =
+    line: (type, x1, y1, x2, y2) ->
+      doSend 'draw', type, { x1, y1, x2, y2, color: vars.color, size: vars.size }
+    text: (x, y, text) ->
+      doSend 'draw', 'text', { x, y, text, color: vars.color, size: vars.font }
+    fill: ->
+      doSend 'draw', 'fill', { color: vars.color }
+    announce: (data) ->
+      doSend 'announce', null, data
+    header: (data) ->
+      doSend 'header', null, data
   socket.connect()

@@ -7,9 +7,9 @@ html
     link(rel: 'shortcut icon', type: 'image/png', href: 'images/favicon.png')
     script(src: 'js/jquery.min.js')
     script(src: '/socket.io/socket.io.js')
+    script(src: 'jscolor/jscolor.js')
     script(src: 'js/whiteboard.js')
   body
-    - sections = { whiteboard: 'Whiteboard', lessons: 'Lessons', admin: 'Admin'}
     section#left-bar.bar
       #profile.section
         img#avatar(src: 'images/avatar.jpg')
@@ -27,29 +27,40 @@ html
             a(href: '#').notice Construction project outside classroom.
             time 12 / 9 / 2010
       nav#nav
-        a.active(data-click: 'whiteboard', href: '#whiteboard')
+        a.active(data-section: 'whiteboard', href: '#whiteboard')
           .long-cat
           span.vert-align Whiteboard
-        a(data-click: 'lessons', href: '#lessons')
+        a(data-section: 'lessons', href: '#lessons')
           .long-cat
           span.vert-align Lessons
-        a(data-click: 'admin', href: '#admin')
+        a(data-section: 'admin', href: '#admin')
           .long-cat
           span.vert-align Admin
     section#center
       .whiteboard
         header
-          a#previous-slide <<
-          a#next-slide >>
+          a(data-slide: 'prev')= '<<'
+          a(data-slide: 'next')= '>>'
           #whiteboard-header First Header
         #whiteboard-container
           canvas#whiteboard(width: '800px', height: '600px')
           #whiteboard-input-container
             textarea#text-input(rows: 1, cols: 1)
-          input#whiteboard-image-loader(type: 'file')
-        footer#toolbar
-          - for (i in icons = 'pencil marker text eraser image fill'.split(' '))
-            img(src: 'images/icons/' + icons[i] + '.png', width: '20px', height: '20px', class: i == 0 ? 'active' : '', data-type: icons[i])
+        footer
+          #toolbar
+            - for (i in icons = 'pencil marker text eraser fill'.split(' '))
+              img(src: 'images/icons/' + icons[i] + '.png', width: '20px', height: '20px', class: i == 0 ? 'active' : '', data-type: icons[i])
+            input.color(value: '000')
+          #extras
+            #marker-size(data-icon: 'marker')
+              label Draw size:
+              input(type: 'number', value: 5)
+            #font-size(data-icon: 'text')
+              label Font size: 
+              input(type: 'number', value: 12)
+            #eraser-size(data-icon: 'eraser')
+              label Draw size:
+              input(type: 'number', value: 5)
       .lessons
         - courses = { Mathematics: { Algebra: 3, 'Algebra II': 2, Geometry: 3 }, English: { Hamlet: 3, 'King Lear': 2, Othello: 2, 'The Tempest': 2 } }
         ul#courses.fancy-list
@@ -61,7 +72,7 @@ html
                 - for (lesson in course = courses[course])
                   li
                     .lesson-title= lesson
-                    ul.lesson.to-whiteboard
+                    ul.lesson(data-section: 'whiteboard')
                       - for (i = 0; i < course[lesson]; ++i)
                         li.slide
                           .slide-top
@@ -91,30 +102,30 @@ html
             #students.input-list
               a Add Participant
               label Participants
-              select(multiple)
-                option Bisley, Matthew
-                option McMillan, Carl
-                option Robinson, Thomas
+              select(size: '2')
+                option(value: 0, selected) Bisley, Matthew
+                option(value: 1) McMillan, Carl
+                option(value: 2) Robinson, Thomas
             ul#student-properties.input-list
               li Permissions
                 ul#permissions.input-list
                   li
-                    input(type: 'checkbox', checked)
+                    input(type: 'checkbox', data-permission: 'chat', checked)
                     label Chat
                   li
-                    input(type: 'checkbox', checked)
+                    input(type: 'checkbox', data-permission: 'drawing', checked)
                     label Drawing
                   li
-                    input(type: 'checkbox', checked)
+                    input(type: 'checkbox', data-permission: 'eraser', checked)
                     label Eraser
                   li
-                    input(type: 'checkbox')
+                    input(type: 'checkbox', data-permission: 'image')
                     label Image
                   li
-                    input(type: 'checkbox')
+                    input(type: 'checkbox', data-permission: 'background')
                     label Background
                   li
-                    input(type: 'checkbox')
+                    input(type: 'checkbox', data-permission: 'clear')
                     label Clear
     section#right-bar.bar
       .whiteboard
@@ -123,7 +134,7 @@ html
             | Lesson
             a#add-slide New Slide
           ol
-            li#current-slide(data-slide: 0) First Header
+            li.active(data-slide: 0) First Header
             li(data-slide: 1) Second Header
             li(data-slide: 2) Third Header
         #announcements.section
@@ -144,13 +155,13 @@ html
           .title Upcoming
           ul
             li
-              a.to-whiteboard(href: '#whiteboard') Algebra II
+              a(href: '#whiteboard', data-section: 'whiteboard') Algebra II
               time 10:00 AM, 20 / 9 / 2010
             li
-              a.to-whiteboard(href: '#whiteboard') Hamlet
+              a(href: '#whiteboard', data-section: 'whiteboard') Hamlet
               time 12:00 AM, 20 / 9 / 2010
             li
-              a.to-whiteboard(href: '#whiteboard') Geometry
+              a(href: '#whiteboard', data-section: 'whiteboard') Geometry
               time 10:00 AM, 21 / 9 / 2010
         #course-list.section
           .title
