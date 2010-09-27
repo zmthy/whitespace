@@ -5,8 +5,6 @@ io = require 'socket.io'
 app = express.createServer()
 app.use connect.staticProvider __dirname + '/lib'
 
-app.get '/favicon.ico', (req, res) -> res.redirect '/lib/icons/marker.png'
-
 socket = io.listen app
 
 socket.on 'connection', (client) ->
