@@ -92,6 +92,7 @@ html, body, section
 .section .title
   padding: 5px 0px
   border-bottom: 1px solid black
+  position: relative
 
 .section li
   font-size: 10pt
@@ -152,6 +153,14 @@ time, .lesson-count
 [data-slide]
   cursor: pointer
 
+[data-slide=prev], [data-slide=next]
+  background-color: rgb(143, 168, 240)
+  border:           1px solid rgb(27, 29, 101)
+  padding: 3px
+  @include border-radius(5px)
+  width: 100px
+  @include unselectable
+
 [data-slide=prev]
   float: left
 
@@ -163,6 +172,10 @@ time, .lesson-count
   width:   100%
   padding: 0px 3px
   @include border-box
+
+#center header
+  display: inline-block
+  width: 600px
 
 #toolbar
   text-align: center
@@ -190,7 +203,7 @@ time, .lesson-count
   padding:         2px 3px
   text-decoration: none
 
-#center .lessons, .admin
+#center .lessons, #center .admin
   padding: 25px
   text-align: left
 
@@ -203,17 +216,22 @@ time, .lesson-count
   border-bottom: 1px solid black
   font-size: 16pt
   font-style: italic
+  position: relative
 
-.add-lesson, #add-slide, .title a
-  float: right
+.add-lesson, #add-slide, .add-course
+  position: absolute
+  right: 0px
   font-size: 8pt
+  top: 0px
+
+.add-course
+  margin-bottom: 5px
 
 .lesson-title
   position: absolute
-  top: 28px
-  left: 28px
+  top: 8px
+  left: 8px
   z-index: 4
-  cursor: pointer
   font-style: italic
   @include unselectable
 
@@ -227,7 +245,6 @@ time, .lesson-count
   width:   220px
   height:  220px
   margin-right: 10px
-  cursor: pointer
 
 .slide
   position: absolute
@@ -235,6 +252,7 @@ time, .lesson-count
   border: 1px solid rgb(204, 194, 106)
   width: 200px
   height: 180px
+  cursor: pointer
 
 .slide
   top: 0px
@@ -252,11 +270,15 @@ time, .lesson-count
   z-index: 2
 
 .slide-top
+  cursor: default
   width: 100%
   height: 30px
   background-color: rgb(254, 234, 61)
   border-bottom: 1px solid rgb(204, 194, 106)
   @include border-box
+
+.slide:first-child .slide-top
+  cursor: pointer
 
 .slide canvas, .slide img
   max-width: 200px
@@ -276,30 +298,30 @@ time, .lesson-count
   display: inline-block
   margin-right: 10px
 
-#students
+.students
   display: inline-block
   margin-right: 20px
 
-#students label
+.students label
   display: block
   margin-bottom: 10px
 
-#students a
+.students a
   float: right
   font-size: 8pt
 
-#students select
+.students select
   height: 400px
   width: 250px
 
-#student-properties
+.student-properties
   display: inline-block
   vertical-align: top
 
-#permissions li
+.permissions li
   display: list-item
 
-#permissions input
+.permissions input
   margin-right: 15px
 
 nav
@@ -322,7 +344,7 @@ nav a
   margin-bottom:    3px
   height:           40px
 
-nav a:hover
+nav a:hover, [data-slide=prev]:hover, [data-slide=next]:hover
   color: rgb(0, 50, 100)
 
 nav a:active, nav a.active
@@ -351,7 +373,7 @@ nav a:active, nav a.active
   display: none
   text-align: left
 
-#announcements input
+#chat input
   width: 100%
   @include border-box
 
@@ -365,3 +387,6 @@ nav a:active, nav a.active
 
 #toolbar img
   vertical-align: middle
+
+.chat-user
+  color: gray

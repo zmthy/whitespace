@@ -63,7 +63,8 @@ html, body, section {
 
 .section .title {
   padding: 5px 0px;
-  border-bottom: 1px solid black; }
+  border-bottom: 1px solid black;
+  position: relative; }
 
 .section li {
   font-size: 10pt;
@@ -129,6 +130,17 @@ time, .lesson-count {
 [data-slide] {
   cursor: pointer; }
 
+[data-slide=prev], [data-slide=next] {
+  background-color: #8fa8f0;
+  border: 1px solid #1b1d65;
+  padding: 3px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  width: 100px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none; }
+
 [data-slide=prev] {
   float: left; }
 
@@ -142,6 +154,10 @@ time, .lesson-count {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
+
+#center header {
+  display: inline-block;
+  width: 600px; }
 
 #toolbar {
   text-align: center; }
@@ -171,7 +187,7 @@ time, .lesson-count {
   padding: 2px 3px;
   text-decoration: none; }
 
-#center .lessons, .admin {
+#center .lessons, #center .admin {
   padding: 25px;
   text-align: left; }
 
@@ -183,18 +199,23 @@ time, .lesson-count {
   margin-bottom: 10px;
   border-bottom: 1px solid black;
   font-size: 16pt;
-  font-style: italic; }
+  font-style: italic;
+  position: relative; }
 
-.add-lesson, #add-slide, .title a {
-  float: right;
-  font-size: 8pt; }
+.add-lesson, #add-slide, .add-course {
+  position: absolute;
+  right: 0px;
+  font-size: 8pt;
+  top: 0px; }
+
+.add-course {
+  margin-bottom: 5px; }
 
 .lesson-title {
   position: absolute;
-  top: 28px;
-  left: 28px;
+  top: 8px;
+  left: 8px;
   z-index: 4;
-  cursor: pointer;
   font-style: italic;
   user-select: none;
   -webkit-user-select: none;
@@ -209,15 +230,15 @@ time, .lesson-count {
 .lesson {
   width: 220px;
   height: 220px;
-  margin-right: 10px;
-  cursor: pointer; }
+  margin-right: 10px; }
 
 .slide {
   position: absolute;
   background-color: #fef49c;
   border: 1px solid #ccc26a;
   width: 200px;
-  height: 180px; }
+  height: 180px;
+  cursor: pointer; }
 
 .slide {
   top: 0px;
@@ -235,6 +256,7 @@ time, .lesson-count {
   z-index: 2; }
 
 .slide-top {
+  cursor: default;
   width: 100%;
   height: 30px;
   background-color: #feea3d;
@@ -242,6 +264,9 @@ time, .lesson-count {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box; }
+
+.slide:first-child .slide-top {
+  cursor: pointer; }
 
 .slide canvas, .slide img {
   max-width: 200px;
@@ -261,30 +286,30 @@ time, .lesson-count {
   display: inline-block;
   margin-right: 10px; }
 
-#students {
+.students {
   display: inline-block;
   margin-right: 20px; }
 
-#students label {
+.students label {
   display: block;
   margin-bottom: 10px; }
 
-#students a {
+.students a {
   float: right;
   font-size: 8pt; }
 
-#students select {
+.students select {
   height: 400px;
   width: 250px; }
 
-#student-properties {
+.student-properties {
   display: inline-block;
   vertical-align: top; }
 
-#permissions li {
+.permissions li {
   display: list-item; }
 
-#permissions input {
+.permissions input {
   margin-right: 15px; }
 
 nav {
@@ -314,7 +339,7 @@ nav a {
   margin-bottom: 3px;
   height: 40px; }
 
-nav a:hover {
+nav a:hover, [data-slide=prev]:hover, [data-slide=next]:hover {
   color: #003264; }
 
 nav a:active, nav a.active {
@@ -345,7 +370,7 @@ nav a:active, nav a.active {
   display: none;
   text-align: left; }
 
-#announcements input {
+#chat input {
   width: 100%;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -361,3 +386,6 @@ nav a:active, nav a.active {
 
 #toolbar img {
   vertical-align: middle; }
+
+.chat-user {
+  color: gray; }

@@ -6,6 +6,8 @@ doc = html = wb = el = cxt = null
 
 # Slide contents
 slides = []
+slideBgs = []
+count = 0
 
 # Element setup
 $ ->
@@ -16,6 +18,7 @@ $ ->
   cxt = el.getContext '2d'
 
 # Section navigation
+swap = null
 $ ->
   sections = 'whiteboard lessons admin'.split ' '
   elements = {}
@@ -27,8 +30,12 @@ $ ->
     elements[section].show()
     swappers.removeClass 'active'
     $("[data-section=#{section}]").addClass 'active'
-  swappers = $('[data-section]').click -> swap $(this).attr 'data-section'
-  swap if hash = document.location.hash.substring 1 then hash else 'lessons'
+    if changeSlide
+      changeSlide count
+      $.each $('[data-preview]'), (i) ->
+        $(this)[0].getContext('2d').putImageData slides[i], 0, 0
+        $(this).parent().css 'background-color', slideBgs[i]
+  swappers = $('[data-section]').live 'click', -> swap $(this).attr 'data-section'
 
 # Header editing
 editHead = null
@@ -52,7 +59,6 @@ $ ->
 # Slide navigation
 changeSlide = null
 $ ->
-  count = 0
   header = $ '#whiteboard-header'
   focussed = false
   $('input, textarea').live 'focus', ->
@@ -60,17 +66,23 @@ $ ->
   .live 'blur', ->
     focussed = false
     true
-  b = $('[data-slide]').live 'click', move = ->
+  changeSlide = (slide) ->
     slides[count] = cxt.getImageData 0, 0, el.width, el.height
-    slide = $(this).attr 'data-slide'
-    if slide is 'next' then (if count < slides.length - 2 then count += 1)
-    else if slide is 'prev' then (if count > 0 then count -= 1)
-    else count = slide
-    b.removeClass 'active'
-    which = $("[data-slide=#{count}]").addClass 'active'
+    count = slide
+    $('[data-slide]').removeClass 'active'
+    which = $("[data-slide=#{slide}]").addClass 'active'
     header.text which.text()
     el.width = el.width
-    cxt.putImageData slides[count], 0, 0
+    cxt.putImageData slides[slide], 0, 0
+    draw.fill slideBgs[slide]
+  $('[data-slide]').live 'click', move = ->
+    slide = $(this).attr 'data-slide'
+    c = count
+    if slide is 'next' then (if c < slides.length - 2 then c += 1)
+    else if slide is 'prev' then (if c > 0 then c -= 1)
+    else c = slide
+    changeSlide c
+    send.slide c
   prev = $('[data-slide=prev]')[0]
   next = $('[data-slide=next]')[0]
   doc.keyup (evt) ->
@@ -79,10 +91,63 @@ $ ->
       when 37 then move.call prev
       when 39 then move.call next
 
+# Lesson renaming
+prepareNewLesson = null
+$ ->
+  prepareNewLesson = (slide) ->
+    title = slide.children()
+    input = $ "<input value='#{title.text()}'>"
+    keypress = (evt) -> blur.call input[0] if evt.which is 13
+    slide.click ->
+      return false if input.on
+      title.html input
+      doc.keypress keypress
+      input.focus().on = on
+      false
+    input.blur blur = ->
+      title.text $(this).val()
+      $(this).remove()
+      doc.unbind 'keypress', keypress
+      input.on = off
+  $.each $('.slide:first-child .slide-top'), -> prepareNewLesson $(this)
+
+# Lesson adding
+$ ->
+  $.each $('#courses>li'), ->
+    name = $(this).attr 'data-name'
+    course = $(this).find '.course'
+    $(this).find('.add-lesson').click ->
+      li = $ '''<li>
+            <ul class="lesson">
+              <li class="slide" data-section="whiteboard">
+                <div class="slide-top">
+                  <div class="lesson-title">New Lesson</div>
+                </div>
+              </li>
+            </ul>
+          </li>'''
+      course.append li
+      prepareNewLesson li.find '.slide-top'
+      children = $("[href=#course-#{name}]+*>span")
+      (less = children.eq 0).text parseInt(less.text(), 10) + 1
+      (slid = children.eq 1).text parseInt(slid.text(), 10) + 1
+
+# Slide adding
+$ ->
+  lesson = $ '#lesson ol'
+  $('#add-slide').click ->
+    lesson.append "<li data-slide='#{len = lesson.children().length}'>New Slide</li>"
+    slides.push blank
+    slideBgs.push 'white'
+    changeSlide len
+
 # Blank slides
+blank = null
 $ ->
   blank = cxt.getImageData 0, 0, el.width, el.height
-  slides.push blank for i in [0..3]
+  for i in [0..$('#lesson li').length]
+    slides.push blank
+    slideBgs.push 'white'
 
 # Drawing vars
 vars = 
@@ -128,6 +193,7 @@ $ ->
       drawText x, y, text, size
     fill: (color) ->
       background.css 'background-color': color or vars.color
+      slideBgs[count] = color or vars.color
 
 # Icons
 icon = 'pencil'
@@ -211,39 +277,22 @@ $ -> $('.color').change -> vars.color = '#' + $(this).val()
 # Students
 $ ->
   defPer = chat: true, drawing: true, eraser: true
-  students = [
-    {
-      first: 'Matthew'
-      last: 'Bisley'
-      permissions:
-        chat: true
-        drawing: true
-        eraser: true
-    }, {
-      first: 'Carl'
-      last: 'McMillan'
-      permissions:
-        drawing: true
-    }, {
-      first: 'Thomas'
-      last: 'Robinson'
-      permissions:
-        chat: true
-        drawing: true
-        eraser: true
-        image: true
-        background: true
-    }
-  ]
-  student = students[0]
-  $('#students select').change ->
-    student = students[$(this).val()]
-    $.each inputs, ->
-      if student.permissions[$(this).attr 'data-permission']
-        $(this).attr 'checked', 'checked'
-      else $(this).removeAttr 'checked'
-  inputs = $('#permissions input').change ->
-    student.permissions[$(this).attr 'data-permission'] = Boolean $(this).attr 'checked'
+  courses = {}
+  $('.permissions label').click -> (input = $(this).prev()[0]).checked = !input.checked
+  $.each $('.admin-course'), ->
+    course = courses[$(this).children('.fancy-title').text()] = []
+    student = null
+    permissions = $(this).find('.permissions input').change ->
+      student[$(this).attr 'data-permission'] = $(this).attr 'checked'
+    $.each $(this).find('select'), ->
+      $.each $(this).children(), ->
+        course.push { 'chat', 'drawing', 'eraser' }
+      student = course[0]
+      $(this).change ->
+        student = course[$(this).val()]
+        $.each permissions, ->
+          if student[$(this).attr 'data-permission'] then $(this).attr 'checked', 'checked'
+          else $(this).removeAttr 'checked'
 
 # Name editing
 $ ->
@@ -253,17 +302,18 @@ $ ->
   first = $('#edit-first-name').keyup nameFn
   last  = $('#edit-last-name').keyup nameFn
 
-# Announcements
+# Chat
 announce = null
 $ ->
-  ul = $ '#announcements ul'
+  ul = $ '#chat ul'
   announce = (text) ->
     ul.children('.empty').remove()
-    ul.append "<li>#{text}</li>"
+    ul.append "<li><span class='chat-user'>Tim:</span> #{text}</li>"
     input.val ''
-  input = $('#announcements input').keydown (evt) -> if evt.which is 13
-    announce text = input.val()
-    send.announce text
+  input = $('#chat input').keydown (evt) -> if evt.which is 13
+    if text = input.val()
+      announce text
+      send.announce text
 
 # Socket
 send = null
@@ -283,6 +333,7 @@ $ ->
           draw.fill data.color
       when 'announce' then announce data
       when 'header' then editHead data
+      when 'slide' then changeSlide data
   doSend = (op, type, data) -> socket.send JSON.stringify { op, type, data }
   send =
     line: (type, x1, y1, x2, y2) ->
@@ -295,4 +346,90 @@ $ ->
       doSend 'announce', null, data
     header: (data) ->
       doSend 'header', null, data
+    slide: (data) ->
+      doSend 'slide', null, data
   socket.connect()
+
+# Presentation
+$ ->
+  doSlide = (slide, title, text...) ->
+    changeSlide slide
+    vars.color = '#3DA5FF'
+    draw.fill()
+    vars.color = '#57FFAB'
+    cxt.textAlign = 'center'
+    vars.font = if title.length > 20 then 48 else 64
+    draw.text 400, 50, title
+    cxt.textAlign = 'left'
+    vars.color = 'white'
+    next = 150
+    for t in text
+      vars.font = 36
+      if typeof t is 'string'
+        draw.text 25, next, t
+        next += (t.split('\n').length + 1) * vars.font
+      else
+        for b, i in t
+          draw.text(25, next, if i is 0 then b else
+            ((if j is 0 then ' - ' else '   ') + l for l, j in b.split('\n')).join '\n')
+          next += (b.split('\n').length + 0.5) * vars.font
+          vars.font = 24
+        next += 20
+  
+  vars.color = '#3DA5FF'
+  draw.fill()
+  vars.color = '#57FFAB'
+  cxt.textAlign = 'center'
+  vars.font = 64
+  draw.text 400, 175, 'White Space'
+  vars.color = 'white'
+  vars.font = 36
+  draw.text 400, 300, 'by Blank Slate'
+  cxt.textAlign = 'left'
+  
+  doSlide 1, 'Main User', 'A User who would utilize a collaborative\n
+and interactive online whiteboard.', 'Someone who would benefit  from a remote\n
+system of communicating information in a\nvisual way.', 'A correspondence educator seemed ideal.'
+  
+  doSlide 2, 'Persona', '"The Educator" is a persona built out of\n
+attributes and opinions of real teachers\nwe all know.', 'But he is also more than that, as we\n
+discovered while developing how he\ninteracted with the world and potentially\n
+our software through scenarios.'
+  
+  doSlide 3, 'Scenarios', ['Teach, and teach well:', 'Drawing to get information across in a 
+natural way.', 'Answering student queries and providing feedback.'], ["Don't waste time on 
+administration:", 'Roll should be taken automatically.', 'He can easily enter his lesson plan.
+', "If necessary, he can use another teacher's lesson so he\n
+doesn't have to worry about planning."]
+   
+  doSlide 4, 'More Scenarios', 'Seeing upcoming lessons.', 'Communication and control.', '
+Notices and announcements out of the\nway of the learning.'
+
+  doSlide 5, 'Design Decisions: Application', 'Many levels of computer literacy.', '
+Real time networking is essential.', ['Web application most suitable:', '
+No worry about installations.', 'Most people at ease with browsers.', 'Ease of networking.', '
+Updates and data storage easily handled at server.']
+  
+  doSlide 6, 'Design Decisions: Features', 'Focus on learning with minimal features.', '
+Focus on the whiteboard.', "Customisable lesson templates so lessons\naren't boring for students.", '
+Give teachers and students profiles for\npermissions and attendance.'
+  
+  doSlide 7, 'Design Decisions: Colours', 'Pale blue - soothes and calms.', 'A little green - 
+inspires creativity.', 'Pale yellow - prevents irritation.', 'Bright red, orange and yellow avoided.\n
+Agitates children, red incites hunger.'
+  
+  doSlide 8, 'What Documentation?', ['There is lack of user documentation.', 'Intuitive interface 
+through universal conventions.', 'Definitely a few tasks that will require documentation\nfor first 
+time users.']
+  
+  doSlide 9, 'Feedback & Errors', 'Some actions have no confirmation of\ntheir success.', '
+No notification about success of\nserver communication.'
+  
+  doSlide 10, 'Other Heuristic Considerations', 'The tab metaphor for novice users.', '
+No shortcuts for advanced users.'
+  
+  # changeSlide 0
+  swap if hash = document.location.hash.substring 1 then hash else 'lessons'
+  vars.color = 'black'
+  vars.font = 12
+  
